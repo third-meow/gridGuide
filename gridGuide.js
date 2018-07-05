@@ -46,9 +46,10 @@ function Bot(initial_x, initial_y, initial_h){
     this.heading = this.heading % 360;
   }
 
-  this.log = function(){
+  this.log = function(extraMsg = ""){
     var logString = "X : " + this.location[0].toString() + ", Y : "
-      + this.location[1].toString() + ", Heading : " + this.heading.toString();
+      + this.location[1].toString() + ", Heading : " + this.heading.toString()
+      + extraMsg;
     console.log(logString);
   }
 }
