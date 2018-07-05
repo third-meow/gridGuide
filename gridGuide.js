@@ -58,22 +58,24 @@ function Bot(initial_x, initial_y, initial_h){
 function BotCon(initial_x = width/2, initial_y = height/2, initial_h = 0){
   //bot object to manipulate
   this.bot = new Bot(initial_x, initial_y, initial_h);
-  //
+  //array of target positions (in format [x, y])
   this.targets = [];
 
   //add new target to targets array
   this.setTarget = function(x,y){
     this.targets.push([x, y]);
+    console.log("Target : "+ this.targets[this.targets.length - 1] + " added");
+    console.log("Currently stepping toward : "+this.targets[0]);
   }
 
   //make small step towards target
   this.stepTowards = function(stpSize = 3){
-    //stuff
+
   }
 
   //moves and draws
   this.run = function(){
-    this.stepTowards();
+    if (this.targets.length > 0) this.stepTowards();
     this.bot.draw();
   }
 }
@@ -104,6 +106,7 @@ function drawDot(x, y){
 function setup(){
   background();
   quad = new BotCon(330,330);
+  quad.bot.log(' - Initial Position');
 }
 
 //runs every 20ms
