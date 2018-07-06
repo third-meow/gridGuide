@@ -35,23 +35,28 @@ function Bot(initial_x, initial_y, initial_h){
 
   //translates heading and distance into location
   this.move = function(dis){
-    this.location[0] += (dis * Math.sin(this.heading * (Math.PI/180)));
-    this.location[1] -= (dis * Math.cos(this.heading * (Math.PI/180)));
-
+    this.location[0] += (dis * Math.sin(this.heading * (Math.PI / 180)));
+    this.location[1] -= (dis * Math.cos(this.heading * (Math.PI / 180)));
   };
 
   //adjust heading
   this.turn = function(degs){
     this.heading += degs;
     this.heading = this.heading % 360;
-  }
+  };
 
+  //set heading
+  this.setHeading = function(newHeading){
+    this.heading = newHeading;
+  };
+
+  //log position and heading
   this.log = function(extraMsg = ""){
     var logString = "X : " + this.location[0].toString() + ", Y : "
       + this.location[1].toString() + ", Heading : " + this.heading.toString()
       + extraMsg;
     console.log(logString);
-  }
+  };
 }
 
 //Bot control system
@@ -60,24 +65,56 @@ function BotCon(initial_x = width/2, initial_y = height/2, initial_h = 0){
   this.bot = new Bot(initial_x, initial_y, initial_h);
   //array of target positions (in format [x, y])
   this.targets = [];
+  //desired heading and step distance
+  this.desiredHeading = 0;
+  this.desiredStepDistance = 0;
+
 
   //add new target to targets array
   this.setTarget = function(x,y){
     this.targets.push([x, y]);
     console.log("Target : "+ this.targets[this.targets.length - 1] + " added");
     console.log("Currently stepping toward : "+this.targets[0]);
-  }
+    this.run();
+  };
+
+  //draw green dots at targets
+  this.drawTargets = function(){
+    ctx.fillStyle = '#11EE11';
+    for(var t = 0; t < this.targets.length; t++){
+      drawDot(this.targets[t][0], this.targets[t][1]);
+    }
+  };
 
   //make small step towards target
-  this.stepTowards = function(stpSize = 3){
+  this.stepTowards = function(){
+    //calculate x and y distance
+    var xdis = (this.targets[0][0] - this.bot.location[0]);
+    var ydis = (this.targets[0][1] - this.bot.location[1]);
 
-  }
+    //calculate desired heading and step size from x and y distance
+    this.desiredHeading = (Math.atan(xdis / ydis) * (180 / Math.PI));
+    this.desiredStepDistance = Math.sqrt((xdis * xdis) + (ydis * ydis));
+
+    console.log(this.desiredHeading);
+    console.log(this.dersiredStepDistance);
+
+    //move bot
+    this.bot.setHeading(this.desiredHeading);
+    this.bot.move(this.desiredHeading);
+
+    //remove target
+    this.targets.shift();
+  };
 
   //moves and draws
   this.run = function(){
-    if (this.targets.length > 0) this.stepTowards();
+    if (this.targets.length > 0 && this.location != this.targets[0]){
+      //this.stepTowards();
+    }
+    this.drawTargets();
     this.bot.draw();
-  }
+  };
 }
 
 
