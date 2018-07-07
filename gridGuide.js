@@ -52,8 +52,8 @@ function Bot(initial_x, initial_y, initial_h){
 
   //log position and heading
   this.log = function(extraMsg = ""){
-    var logString = "X : " + this.location[0].toString() + ", Y : "
-      + this.location[1].toString() + ", Heading : " + this.heading.toString()
+    var logString = "X : " + Math.round(this.location[0]).toString() + ", Y : "
+      + Math.round(this.location[1]).toString() + ", Heading : " + this.heading.toString()
       + extraMsg;
     console.log(logString);
   };
@@ -97,7 +97,7 @@ function BotCon(initial_x = width/2, initial_y = height/2, initial_h = 0){
     this.desiredStepDistance = Math.sqrt((xdis * xdis) + (ydis * ydis));
 
     console.log(this.desiredHeading);
-    console.log(this.dersiredStepDistance);
+    console.log(this.desiredStepDistance);
 
     //move bot
     this.bot.setHeading(this.desiredHeading);
