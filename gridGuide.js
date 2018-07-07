@@ -92,16 +92,45 @@ function BotCon(initial_x = width/2, initial_y = height/2, initial_h = 0){
     var xdis = (this.targets[0][0] - this.bot.location[0]);
     var ydis = (this.targets[0][1] - this.bot.location[1]);
 
-    //calculate desired heading and step size from x and y distance
-    this.desiredHeading = (Math.atan(xdis / ydis) * (180 / Math.PI));
-    this.desiredStepDistance = Math.sqrt((xdis * xdis) + (ydis * ydis));
+    //is target is straight left/right
+    if(ydis == 0){
+      //dersired heading should equal 90 or 270
+      if (xdis > 0) {
+        this.desiredHeading = 90;
+      }
+      else{
+        this.desiredHeading = -90;
+      }
+
+      //derired step distance should equal xdis
+      this.desiredStepDistance = Math.abs(xdis);
+    }
+    //if target is straight up/down
+    else if (xdis == 0){
+      //dersired heading will equal 0 or 180
+      if(ydis > 0){
+        this.desiredHeading = 0;
+      }
+      else{
+        this.desiredHeading = 180;
+      }
+
+      //derired step distance should equal ydis
+      this.desiredStepDistance = Math.abs(ydis);
+    }
+    else{
+      //calculate desired heading and step size with trig
+      this.desiredHeading = (Math.atan(xdis / ydis) * (180 / Math.PI));
+      this.desiredStepDistance = Math.sqrt((xdis * xdis) + (ydis * ydis));
+    }
+
 
     console.log(this.desiredHeading);
     console.log(this.desiredStepDistance);
 
     //move bot
     this.bot.setHeading(this.desiredHeading);
-    this.bot.move(this.desiredHeading);
+    this.bot.move(this.desiredStepDistance);
 
     //remove target
     this.targets.shift();
