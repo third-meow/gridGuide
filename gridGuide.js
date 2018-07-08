@@ -47,14 +47,14 @@ function Bot(initial_x, initial_y, initial_h){
 
   //set heading
   this.setHeading = function(newHeading){
-    this.heading = newHeading;
+    this.heading = newHeading % 360;
   };
 
   //log position and heading
   this.log = function(extraMsg = ""){
     var logString = "X : " + Math.round(this.location[0]).toString() + ", Y : "
-      + Math.round(this.location[1]).toString() + ", Heading : " + this.heading.toString()
-      + extraMsg;
+      + Math.round(this.location[1]).toString() + ", Heading : "
+      + Math.round(this.heading.toString()) + extraMsg;
     console.log(logString);
   };
 }
@@ -74,7 +74,7 @@ function BotCon(initial_x = width/2, initial_y = height/2, initial_h = 0){
   this.setTarget = function(x,y){
     this.targets.push([x, y]);
     console.log("Target : "+ this.targets[this.targets.length - 1] + " added");
-    console.log("Currently stepping toward : "+this.targets[0]);
+    console.log("Next Target : "+this.targets[0]);
     this.run();
   };
 
@@ -88,59 +88,69 @@ function BotCon(initial_x = width/2, initial_y = height/2, initial_h = 0){
 
   //make small step towards target
   this.stepTowards = function(){
-    //calculate x and y distance
-    var xdis = (this.targets[0][0] - this.bot.location[0]);
-    var ydis = (this.targets[0][1] - this.bot.location[1]);
+    //if target list not empty
+    if (this.targets.length != 0){
+      //calculate x and y distance
+      var xdis = (this.bot.location[0] - this.targets[0][0]);
+      var ydis = (this.bot.location[1] - this.targets[0][1]);
 
-    //is target is straight left/right
-    if(ydis == 0){
-      //dersired heading should equal 90 or 270
-      if (xdis > 0) {
-        this.desiredHeading = 90;
+      //is target is straight left/right
+      if(ydis == 0){
+        //dersired heading should equal 90 or 270
+        if (xdis > 0) {
+          this.desiredHeading = 90;
+        }
+        else{
+          this.desiredHeading = 270;
+        }
+
+        //derired step distance should equal xdis
+        this.desiredStepDistance = Math.abs(xdis);
       }
+      //if target is straight up/down
+      else if (xdis == 0){
+        //dersired heading will equal 0 or 180
+        if(ydis > 0){
+          this.desiredHeading = 180;
+        }
+        else{
+          this.desiredHeading = 0;
+        }
+
+        //derired step distance should equal ydis
+        this.desiredStepDistance = Math.abs(ydis);
+      }
+      //else target is on an angle
       else{
-        this.desiredHeading = -90;
+        //calculate desired heading and step size with trig
+        this.desiredHeading = Math.abs(Math.atan(xdis / ydis) * (180 / Math.PI));
+        this.desiredStepDistance = Math.sqrt((xdis * xdis) + (ydis * ydis));
+
+        //if target is down and to right add 90
+        if (xdis < 0 && ydis < 0){
+          this.desiredHeading += 90;
+        }
+        //if target is down and to left add 180
+        else if (xdis > 0 && ydis < 0){
+          this.desiredHeading += 180;
+        }
+        //if up and left add 270
+        else if(xdis > 0 && ydis > 0){
+          this.desiredHeading += 270;
+        }
       }
 
-      //derired step distance should equal xdis
-      this.desiredStepDistance = Math.abs(xdis);
+      //move bot
+      this.bot.setHeading(this.desiredHeading);
+      this.bot.move(this.desiredStepDistance);
+
+      //remove target
+      this.targets.shift();
     }
-    //if target is straight up/down
-    else if (xdis == 0){
-      //dersired heading will equal 0 or 180
-      if(ydis > 0){
-        this.desiredHeading = 0;
-      }
-      else{
-        this.desiredHeading = 180;
-      }
-
-      //derired step distance should equal ydis
-      this.desiredStepDistance = Math.abs(ydis);
-    }
-    else{
-      //calculate desired heading and step size with trig
-      this.desiredHeading = (Math.atan(xdis / ydis) * (180 / Math.PI));
-      this.desiredStepDistance = Math.sqrt((xdis * xdis) + (ydis * ydis));
-    }
-
-
-    console.log(this.desiredHeading);
-    console.log(this.desiredStepDistance);
-
-    //move bot
-    this.bot.setHeading(this.desiredHeading);
-    this.bot.move(this.desiredStepDistance);
-
-    //remove target
-    this.targets.shift();
   };
 
   //moves and draws
   this.run = function(){
-    if (this.targets.length > 0 && this.location != this.targets[0]){
-      //this.stepTowards();
-    }
     this.drawTargets();
     this.bot.draw();
   };
@@ -171,7 +181,7 @@ function drawDot(x, y){
 //runs only once, sets stuff up
 function setup(){
   background();
-  quad = new BotCon(330,330);
+  quad = new BotCon(300,300);
   quad.bot.log(' - Initial Position');
 }
 
