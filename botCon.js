@@ -96,5 +96,3 @@ function BotCon(initial_x = width/2, initial_y = height/2, initial_h = 0){
     this.bot.draw();
   };
 }
-
-export {BotCon};

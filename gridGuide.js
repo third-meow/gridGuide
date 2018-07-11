@@ -1,6 +1,3 @@
-import Bot from './bot.js';
-import BotCon from './botCon.js';
-
 
 //canvas control object
 var ctx;

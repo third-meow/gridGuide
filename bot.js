@@ -49,5 +49,3 @@ function Bot(initial_x, initial_y, initial_h){
     console.log(logString);
   };
 }
-
-export {Bot};
